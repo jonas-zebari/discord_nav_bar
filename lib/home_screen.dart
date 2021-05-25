@@ -10,7 +10,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+  final _selectedIndex = ValueNotifier(0);
 
   @override
   Widget build(BuildContext context) {
@@ -18,16 +18,19 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         ServerNavigationRail(
           items: _serverItems,
-          selectedIndex: _selectedIndex,
-          onChanged: (index) => setState(() => _selectedIndex = index),
+          selectedIndex: _selectedIndex.value,
+          onChanged: (index) => _selectedIndex.value = index,
         ),
         Expanded(
-          child: Scaffold(
-            backgroundColor: DiscordTheme.background3,
-            body: Center(
-              child: Text(
-                'Page $_selectedIndex',
-                style: TextStyle(color: DiscordTheme.white),
+          child: ValueListenableBuilder(
+            valueListenable: _selectedIndex,
+            builder: (context, selectedIndex, _) => Scaffold(
+              backgroundColor: DiscordTheme.background3,
+              body: Center(
+                child: Text(
+                  'Page $selectedIndex',
+                  style: TextStyle(color: DiscordTheme.white),
+                ),
               ),
             ),
           ),
