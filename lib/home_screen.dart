@@ -38,15 +38,15 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 const _serverItems = [
-  DiscordServerItem(
+  ServerItem(
     name: 'Cool Folks Only',
     imageUrl: 'assets/images/server1.jpg',
   ),
-  DiscordServerItem(
+  ServerItem(
     name: 'Rive',
     imageUrl: 'assets/images/server2.jpg',
   ),
-  DiscordServerItem(
+  ServerItem(
     name: 'Animal Crossing',
   ),
 ];

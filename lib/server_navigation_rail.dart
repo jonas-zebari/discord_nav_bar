@@ -9,7 +9,7 @@ class ServerNavigationRail extends StatefulWidget {
     this.onChanged,
   }) : super(key: key);
 
-  final List<DiscordServerItem> items;
+  final List<ServerItem> items;
   final int selectedIndex;
   final ValueChanged<int>? onChanged;
 
@@ -46,7 +46,7 @@ class _DiscordServerItemWidget extends StatefulWidget {
     required this.onPressed,
   }) : super(key: key);
 
-  final DiscordServerItem item;
+  final ServerItem item;
   final bool selected;
   final VoidCallback onPressed;
 
@@ -209,8 +209,8 @@ class _TrianglePainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-class DiscordServerItem {
-  const DiscordServerItem({
+class ServerItem {
+  const ServerItem({
     required this.name,
     this.backgroundColor = DiscordTheme.primary,
     this.imageUrl,
