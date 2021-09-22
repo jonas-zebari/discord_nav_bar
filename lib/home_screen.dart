@@ -1,5 +1,5 @@
+import 'package:discord_nav_bar/discord_theme.dart';
 import 'package:discord_nav_bar/server_navigation_rail.dart';
-import 'package:discord_nav_bar/theme.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -44,10 +44,12 @@ const _serverItems = [
   ServerItem(
     name: 'Cool Folks Only',
     imageUrl: 'assets/images/server1.jpg',
+    muted: true,
   ),
   ServerItem(
     name: 'Rive',
     imageUrl: 'assets/images/server2.jpg',
+    muted: true,
   ),
   ServerItem(
     name: 'Animal Crossing',

@@ -1,5 +1,7 @@
-import 'package:discord_nav_bar/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_portal/flutter_portal.dart';
+
+import 'discord_theme.dart';
 
 class ServerNavigationRail extends StatefulWidget {
   const ServerNavigationRail({
@@ -66,7 +68,6 @@ class _DiscordServerItemWidgetState extends State<_DiscordServerItemWidget>
       .chain(CurveTween(curve: Curves.easeOutBack))
       .animate(_controller);
 
-  late OverlayEntry _overlayEntry;
   var _isHovering = false;
   var _isMouseDown = false;
 
@@ -84,112 +85,119 @@ class _DiscordServerItemWidgetState extends State<_DiscordServerItemWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.centerLeft,
-      children: [
-        AnimatedContainer(
-          duration: Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-          height: _barHeight,
-          width: _showBar ? 4 : 0,
-          decoration: BoxDecoration(
-            color: _showBar ? DiscordTheme.white : Colors.transparent,
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(4),
-              bottomRight: Radius.circular(4),
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: widget.onPressed,
-          onTapDown: (_) => setState(() => _isMouseDown = true),
-          onTapUp: (_) => setState(() => _isMouseDown = false),
-          child: MouseRegion(
-            onEnter: _onEnter,
-            onExit: _onExit,
-            child: Transform.translate(
-              offset: _isMouseDown ? Offset(0.0, 1.0) : Offset.zero,
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 150),
-                curve: Curves.easeOut,
-                margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: widget.item.imageUrl == null
-                      ? widget.item.backgroundColor
-                      : null,
-                  image: widget.item.imageUrl != null
-                      ? DecorationImage(
-                          image: AssetImage(widget.item.imageUrl!),
-                          fit: BoxFit.fill,
-                        )
-                      : null,
-                  borderRadius: BorderRadius.circular(_showBar ? 16 : 32),
-                ),
-                child: AspectRatio(aspectRatio: 1.0),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _onEnter(_) {
-    setState(() => _isHovering = true);
-    final renderBox = context.findRenderObject() as RenderBox;
-    final size = renderBox.size;
-    final position = renderBox.localToGlobal(Offset.zero);
-    final left = size.width + 8;
-    final top = position.dy + 8;
-    _overlayEntry = OverlayEntry(builder: (context) {
-      return Positioned(
-        left: left,
-        top: top,
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return FadeTransition(
+    return PortalEntry(
+      visible: _isHovering,
+      portalAnchor: Alignment.centerLeft,
+      childAnchor: Alignment.centerRight,
+      portal: IntrinsicWidth(
+        child: IgnorePointer(
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) => FadeTransition(
               opacity: _opacity,
               child: ScaleTransition(
                 scale: _scale,
                 child: child,
               ),
-            );
-          },
-          child: Row(
-            children: [
-              CustomPaint(
-                size: Size(4, 10),
-                painter: _TrianglePainter(),
-              ),
-              Material(
-                elevation: 16,
-                shadowColor: DiscordTheme.shadow,
-                color: DiscordTheme.background1,
-                borderRadius: BorderRadius.circular(8),
-                child: Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Text(
-                    widget.item.name,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
+            ),
+            child: Row(
+              children: [
+                CustomPaint(
+                  size: Size(4, 10),
+                  painter: _TrianglePainter(),
+                ),
+                Material(
+                  elevation: 16,
+                  shadowColor: DiscordTheme.shadow,
+                  color: DiscordTheme.background1,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.item.name,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (widget.item.muted)
+                          Text(
+                            'Muted',
+                            style: TextStyle(
+                              color: DiscordTheme.gray,
+                              fontSize: 12,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      );
-    });
-    Overlay.of(context)?.insert(_overlayEntry);
+      ),
+      child: Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          AnimatedContainer(
+            duration: Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+            height: _barHeight,
+            width: _showBar ? 4 : 0,
+            decoration: BoxDecoration(
+              color: _showBar ? DiscordTheme.white : Colors.transparent,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(4),
+                bottomRight: Radius.circular(4),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: widget.onPressed,
+            onTapDown: (_) => setState(() => _isMouseDown = true),
+            onTapUp: (_) => setState(() => _isMouseDown = false),
+            child: MouseRegion(
+              onEnter: _onEnter,
+              onExit: _onExit,
+              cursor: SystemMouseCursors.click,
+              child: Transform.translate(
+                offset: _isMouseDown ? Offset(0.0, 1.0) : Offset.zero,
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 150),
+                  curve: Curves.easeOut,
+                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: widget.item.backgroundColor,
+                    image: widget.item.imageUrl != null
+                        ? DecorationImage(
+                            image: AssetImage(widget.item.imageUrl!),
+                            fit: BoxFit.fill,
+                          )
+                        : null,
+                    borderRadius: BorderRadius.circular(_showBar ? 16 : 32),
+                  ),
+                  child: AspectRatio(aspectRatio: 1.0),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onEnter(_) {
+    setState(() => _isHovering = true);
     _controller.forward();
   }
 
   void _onExit(_) {
     setState(() => _isHovering = false);
-    _overlayEntry.remove();
     _controller.reset();
   }
 }
@@ -206,7 +214,7 @@ class _TrianglePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(_TrianglePainter oldDelegate) => false;
 }
 
 class ServerItem {
@@ -214,9 +222,11 @@ class ServerItem {
     required this.name,
     this.backgroundColor = DiscordTheme.primary,
     this.imageUrl,
+    this.muted = false,
   });
 
   final String name;
   final Color backgroundColor;
   final String? imageUrl;
+  final bool muted;
 }

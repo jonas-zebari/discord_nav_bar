@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_portal/flutter_portal.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'home_screen.dart';
 
@@ -11,8 +13,11 @@ class Discord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomeScreen(),
+    return Portal(
+      child: MaterialApp(
+        theme: ThemeData(textTheme: GoogleFonts.openSansTextTheme()),
+        home: HomeScreen(),
+      ),
     );
   }
 }
