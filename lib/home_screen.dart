@@ -10,7 +10,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _selectedIndex = ValueNotifier(0);
+  var _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -18,19 +18,16 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         ServerNavigationRail(
           items: _serverItems,
-          selectedIndex: _selectedIndex.value,
-          onChanged: (index) => _selectedIndex.value = index,
+          selectedIndex: _selectedIndex,
+          onChanged: (index) => setState(() => _selectedIndex = index),
         ),
         Expanded(
-          child: ValueListenableBuilder(
-            valueListenable: _selectedIndex,
-            builder: (context, selectedIndex, _) => Scaffold(
-              backgroundColor: DiscordTheme.background3,
-              body: Center(
-                child: Text(
-                  'Page $selectedIndex',
-                  style: TextStyle(color: DiscordTheme.white),
-                ),
+          child: Scaffold(
+            backgroundColor: DiscordTheme.background3,
+            body: Center(
+              child: Text(
+                'Page $_selectedIndex',
+                style: TextStyle(color: DiscordTheme.white),
               ),
             ),
           ),
@@ -40,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-const _serverItems = [
+final _serverItems = [
   ServerItem(
     name: 'Cool Folks Only',
     imageUrl: 'assets/images/server1.jpg',
@@ -52,6 +49,12 @@ const _serverItems = [
     muted: true,
   ),
   ServerItem(
+    name: 'Flare',
+    imageUrl: 'assets/images/server2.jpg',
+    muted: false,
+  ),
+  ServerItem(
     name: 'Animal Crossing',
+    hasNotification: true,
   ),
 ];

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'discord_theme.dart';
 
@@ -28,12 +29,54 @@ class _ServerNavigationRailState extends State<ServerNavigationRail> {
       child: ListView(
         padding: EdgeInsets.symmetric(vertical: 4),
         children: [
+          _DiscordServerItemWidget(
+            item: ServerItem(
+              name: 'Home',
+              backgroundColor: DiscordTheme.background3,
+            ),
+            selected: false,
+            child: Center(
+              child: FaIcon(
+                FontAwesomeIcons.discord,
+                color: DiscordTheme.gray,
+              ),
+            ),
+          ),
+          Divider(
+            height: 10,
+            indent: 20,
+            endIndent: 20,
+            color: DiscordTheme.background3,
+          ),
           for (var i = 0; i < widget.items.length; i++)
             _DiscordServerItemWidget(
               item: widget.items[i],
               selected: widget.selectedIndex == i,
               onPressed: () => widget.onChanged?.call(i),
             ),
+          _DiscordServerItemWidget(
+            item: ServerItem(
+              name: 'Add a Server',
+              backgroundColor: DiscordTheme.background3,
+            ),
+            selected: false,
+            child: Icon(
+              Icons.add,
+              size: 28,
+              color: DiscordTheme.accent,
+            ),
+          ),
+          _DiscordServerItemWidget(
+            item: ServerItem(
+              name: 'Explore Public Servers',
+              backgroundColor: DiscordTheme.background3,
+            ),
+            selected: false,
+            child: Icon(
+              Icons.explore,
+              color: DiscordTheme.accent,
+            ),
+          ),
         ],
       ),
     );
@@ -45,12 +88,14 @@ class _DiscordServerItemWidget extends StatefulWidget {
     Key? key,
     required this.item,
     required this.selected,
-    required this.onPressed,
+    this.onPressed,
+    this.child,
   }) : super(key: key);
 
   final ServerItem item;
   final bool selected;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
+  final Widget? child;
 
   @override
   _DiscordServerItemWidgetState createState() =>
@@ -73,15 +118,20 @@ class _DiscordServerItemWidgetState extends State<_DiscordServerItemWidget>
 
   double get _barHeight {
     if (widget.selected) {
-      return 40;
+      return 40.0;
     } else if (_isHovering) {
-      return 20;
+      return 20.0;
+    } else if (widget.item.hasNotification) {
+      return 8.0;
     } else {
-      return 0;
+      return 0.0;
     }
   }
 
-  bool get _showBar => widget.selected || _isHovering;
+  bool get _showBar =>
+      widget.selected || widget.item.hasNotification || _isHovering;
+
+  bool get _showRounded => widget.selected || _isHovering;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +152,7 @@ class _DiscordServerItemWidgetState extends State<_DiscordServerItemWidget>
             ),
             child: Row(
               children: [
+                SizedBox(width: 4),
                 CustomPaint(
                   size: Size(4, 10),
                   painter: _TrianglePainter(),
@@ -179,9 +230,12 @@ class _DiscordServerItemWidgetState extends State<_DiscordServerItemWidget>
                             fit: BoxFit.fill,
                           )
                         : null,
-                    borderRadius: BorderRadius.circular(_showBar ? 16 : 32),
+                    borderRadius: BorderRadius.circular(_showRounded ? 16 : 32),
                   ),
-                  child: AspectRatio(aspectRatio: 1.0),
+                  child: AspectRatio(
+                    aspectRatio: 1.0,
+                    child: widget.child,
+                  ),
                 ),
               ),
             ),
@@ -197,7 +251,10 @@ class _DiscordServerItemWidgetState extends State<_DiscordServerItemWidget>
   }
 
   void _onExit(_) {
-    setState(() => _isHovering = false);
+    setState(() {
+      _isHovering = false;
+      _isMouseDown = false;
+    });
     _controller.reset();
   }
 }
@@ -218,15 +275,17 @@ class _TrianglePainter extends CustomPainter {
 }
 
 class ServerItem {
-  const ServerItem({
+  ServerItem({
     required this.name,
     this.backgroundColor = DiscordTheme.primary,
     this.imageUrl,
     this.muted = false,
+    this.hasNotification = false,
   });
 
   final String name;
   final Color backgroundColor;
   final String? imageUrl;
-  final bool muted;
+  bool muted;
+  bool hasNotification;
 }
